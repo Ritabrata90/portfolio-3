@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUpRight, Braces, Check, ChevronRight, CircleDot, Code2, Database, Globe2, Link, Mail, Menu, Network, Server, ShieldCheck, Sparkles, Terminal, X, Zap } from 'lucide-react'
 
@@ -14,7 +14,22 @@ function GraphTree() {
 }
 
 function App() {
-  const [menu, setMenu] = useState(false); const [activeNode, setActiveNode] = useState(0); const [expanded, setExpanded] = useState<number | null>(null)
+  const [menu, setMenu] = useState(false); const [activeNode, setActiveNode] = useState(0); const [expanded, setExpanded] = useState<number | null>(null); const [contactStatus, setContactStatus] = useState('')
+  async function handleContactSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    setContactStatus('Sending...')
+    const form = event.currentTarget
+    const payload = Object.fromEntries(new FormData(form).entries())
+    try {
+      const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      const result = await response.json() as { message?: string }
+      if (!response.ok) throw new Error(result.message ?? 'Unable to send your message.')
+      form.reset()
+      setContactStatus('Message sent successfully.')
+    } catch (error) {
+      setContactStatus(error instanceof Error ? error.message : 'Unable to send your message.')
+    }
+  }
   return <div className="site-shell">
     <header className="navbar"><a className="brand" href="#home"><span className="brand-mark"><Braces size={16} /></span>dev<span className="accent">/</span>portfolio</a><button className="menu-toggle" onClick={() => setMenu(!menu)} aria-label="Toggle menu">{menu ? <X /> : <Menu />}</button><nav className={menu ? 'nav-links open' : 'nav-links'}>{['About', 'Skills', 'Projects', 'Systems', 'Experience', 'Contact'].map(item => <a key={item} href={`#${item.toLowerCase()}`} onClick={() => setMenu(false)}>{item}</a>)}<span className="availability"><CircleDot size={12} /> Available for opportunities</span></nav></header>
     <main>
@@ -28,7 +43,7 @@ function App() {
       <section id="systems" className="section-wrap"><Heading eyebrow="04 / System design" title="How I think about systems." /><div className="system-layout"><Reveal><div className="system-diagram"><div className="diagram-meta"><span>request flow</span><span>latency_budget: 180ms</span></div><div className="flow">{['Client', 'CDN', 'Load balancer', 'API gateway', 'App servers', 'Cache', 'Database'].map((item, i) => <div className="flow-item" key={item}><div className={i === 4 ? 'flow-node active' : 'flow-node'}><small>0{i + 1}</small>{item}</div>{i < 6 && <div className="flow-line" />}</div>)}</div><div className="diagram-meta"><span>● healthy</span><span>● cached</span><span>● persistent</span></div></div></Reveal><Reveal delay={.1}><div className="system-notes"><span className="eyebrow">The principles</span><h3>Good architecture makes the right thing easier.</h3><p>I think in boundaries, feedback loops, and failure modes. The goal is not complexity; it's a system that stays understandable as it grows.</p>{['Scalability', 'Caching', 'API design', 'Fault tolerance', 'Security', 'Observability'].map((x, i) => <div className="topic" key={x}><span>0{i + 1}</span>{x}<ArrowUpRight size={13} /></div>)}</div></Reveal></div></section>
       <section id="experience" className="section-wrap experience"><Heading eyebrow="05 / Experience & education" title="Still learning. Always building." /><div className="timeline"><div className="timeline-item"><i /><span>2023 — 2027</span><h3>B.Tech</h3><b>Techno India University</b><p>Building a foundation across Data Structures & Algorithms, Database Management Systems, Operating Systems, Computer Networks, Object-Oriented Programming, and Software Engineering.</p></div><div className="timeline-item"><i /><span>2022</span><h3>Higher Secondary</h3><b>Narit Nayaratna Institution</b><p>Completed higher-secondary education while developing an early interest in technology and problem-solving.</p></div><div className="timeline-item"><i /><span>2010</span><h3>Secondary</h3><b>Nowpara High School</b><p>Completed secondary education and began the academic journey that led toward software engineering.</p></div></div></section>
       <section className="philosophy"><div className="section-wrap philosophy-inner"><span className="eyebrow">06 / Developer philosophy</span><h2>Build. Learn.<br /><em>Improve. Repeat.</em></h2><div className="principles">{['Write clean code', 'Design for scale', 'Keep systems simple', 'Learn continuously', 'Solve real problems'].map((x, i) => <div key={x}><span>0{i + 1}</span>{x}</div>)}</div></div></section>
-      <section id="contact" className="section-wrap contact"><div><span className="eyebrow">07 / Contact</span><h2>Let's build<br /><em>something great.</em></h2><p>Have a problem worth solving? I'd like to hear about it.</p><div className="contact-links"><a href="mailto:ritabratadasown@gmail.com"><Mail size={16} /> ritabratadasown@gmail.com</a><a href="https://github.com/Ritabrata90" target="_blank" rel="noreferrer"><Link size={16} /> github.com/Ritabrata90</a><a href="https://www.linkedin.com/in/ritabrata-das-23480b2a6" target="_blank" rel="noreferrer"><Link size={16} /> linkedin.com/in/ritabrata-das</a></div></div><form className="contact-form" onSubmit={e => e.preventDefault()}>{['Name', 'Email', 'Subject'].map(label => <label key={label}>{label}<input placeholder={label === 'Email' ? 'you@company.com' : label === 'Subject' ? 'What are we building?' : 'Your name'} /></label>)}<label>Message<textarea placeholder="Tell me a little about the project..." rows={4} /></label><button className="button primary" type="submit">Send message <ArrowUpRight size={16} /></button></form></section>
+      <section id="contact" className="section-wrap contact"><div><span className="eyebrow">07 / Contact</span><h2>Let's build<br /><em>something great.</em></h2><p>Have a problem worth solving? I'd like to hear about it.</p><div className="contact-links"><a href="mailto:ritabratadasown@gmail.com"><Mail size={16} /> ritabratadasown@gmail.com</a><a href="https://github.com/Ritabrata90" target="_blank" rel="noreferrer"><Link size={16} /> github.com/Ritabrata90</a><a href="https://www.linkedin.com/in/ritabrata-das-23480b2a6" target="_blank" rel="noreferrer"><Link size={16} /> linkedin.com/in/ritabrata-das</a></div></div><form className="contact-form" onSubmit={handleContactSubmit}><label>Name<input name="name" placeholder="Your name" required /></label><label>Email<input name="email" type="email" placeholder="you@company.com" required /></label><label>Subject<input name="subject" placeholder="What are we building?" required /></label><label>Message<textarea name="message" placeholder="Tell me a little about the project..." rows={4} required /></label><button className="button primary" type="submit">Send message <ArrowUpRight size={16} /></button>{contactStatus && <p role="status">{contactStatus}</p>}</form></section>
     </main><footer><span className="brand"><span className="brand-mark"><Braces size={16} /></span>dev<span className="accent">/</span>portfolio</span><span>Building software that solves real problems.</span><span>© 2026 [Your Name]</span></footer><a className="back-top" href="#home" aria-label="Back to top"><ArrowUpRight size={16} /></a>
   </div>
 }

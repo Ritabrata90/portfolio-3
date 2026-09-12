@@ -2,6 +2,19 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
+## Contact form backend
+
+The contact form sends submissions through the Express API in `server/index.ts` using SMTP. Copy `.env.example` to `.env` and fill in the SMTP account details. For Gmail, use an App Password rather than your normal account password.
+
+Run the frontend and API in separate terminals:
+
+```bash
+npm run server:dev
+npm run dev
+```
+
+The Vite development proxy forwards `/api/contact` to `http://localhost:3001`. Never commit `.env` or SMTP credentials.
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
