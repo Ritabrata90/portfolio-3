@@ -22,7 +22,13 @@ function App() {
     const payload = Object.fromEntries(new FormData(form).entries())
     try {
       const response = await fetch('/api/contact', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-      const result = await response.json() as { message?: string }
+      const responseText = await response.text()
+      let result: { message?: string } = {}
+      try {
+        result = JSON.parse(responseText) as { message?: string }
+      } catch {
+        throw new Error('The email service returned an invalid response. Please try again later.')
+      }
       if (!response.ok) throw new Error(result.message ?? 'Unable to send your message.')
       form.reset()
       setContactStatus('Message sent successfully.')
